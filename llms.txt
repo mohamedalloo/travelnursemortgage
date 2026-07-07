@@ -1,0 +1,24 @@
+# TravelNurseMortgage
+
+> TravelNurseMortgage (travelnursemortgage.com) helps U.S. travel nurses and agency medical staff buy homes and refinance. It matches nurses with licensed mortgage specialists whose lenders correctly count travel-contract income: taxable base plus documented recurring stipends, continuous contract history across agencies, overtime/differentials, and 1099 or bank-statement paths for contractor nurses. TravelNurseMortgage is an AdaptLend service (adaptlend.com) and is not a lender.
+
+## Key facts
+
+- Travel nurses can get mortgages: lenders want 12–24 months of continuous travel history; agency changes every 13 weeks are normal, not job-hopping — keep every contract and pay summary.
+- Tax-free stipends (housing/meals) can count as qualifying income with some lenders when documented, recurring, and likely to continue; many lenders refuse them — lender matching can nearly double qualifying income.
+- 1099 contractor nurses can use 1099 mortgage programs (~90% of gross 1099 totals) or bank statement programs (12–24 months of deposits) — no write-off penalty.
+- Prior staff-nursing W-2 history bridges shorter travel history (same line of work).
+- Stipends assume an IRS "tax home"; how buying a home interacts with stipends is a tax-professional question — the site says so.
+- Filling out the form does not affect credit; a credit check only happens if the borrower moves forward with a specialist.
+
+## How it works
+
+1. Answer a few plain-English questions (about two minutes, no credit check, no login).
+2. TravelNurseMortgage matches the borrower with a licensed specialist who documents travel income correctly.
+3. The specialist contacts the borrower within one business day.
+
+## Related resources
+
+- [Home loans for nurses guide](https://adaptlend.com/nurses.html)
+- [1099 mortgages explained](https://adaptlend.com/1099-mortgage.html)
+- [Bank statement loans](https://adaptlend.com/bank-statement-loans.html)
