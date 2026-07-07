@@ -271,3 +271,105 @@ h3 { font-size: 22px; font-weight: 600; margin: 0 0 10px; }
   .final-cta h2 { font-size: 30px; }
   .field-row, .field-row-3 { grid-template-columns: 1fr; }
 }
+
+/* ===== AdaptLend form engine styles (ported) ===== */
+.form-overlay { --surface: var(--card); --line: var(--hair); --gold: #d4af37;
+  position: fixed; inset: 0; background: var(--bg); z-index: 100; overflow-y: auto; }
+.form-shell { max-width: 680px; margin: 0 auto; padding: 24px 28px 72px; min-height: 0; display: block; }
+.form-topbar { display: flex; align-items: center; justify-content: space-between; gap: 16px; padding: 8px 0 24px; }
+.form-close { background: none; border: 1px solid var(--line); border-radius: 10px; width: 38px; height: 38px; display: grid; place-items: center; color: var(--ink); transition: border-color .15s; cursor: pointer; }
+.form-close:hover { border-color: var(--ink); }
+.form-close svg { width: 16px; height: 16px; }
+.form-progress { height: 3px; background: var(--line); border-radius: 999px; overflow: hidden; margin-bottom: 48px; }
+.form-progress-bar { height: 100%; width: 0%; background: var(--accent); border-radius: 999px; transition: width .3s ease; }
+.form-step-label { font-size: 12px; font-weight: 600; text-transform: uppercase; letter-spacing: .12em; color: var(--muted); margin-bottom: 14px; }
+.affirmation { display: flex; align-items: flex-start; gap: 10px; background: var(--accent-soft); color: var(--accent-dark, var(--accent)); border-radius: 10px; padding: 12px 16px; font-size: 14.5px; font-weight: 500; margin-bottom: 28px; }
+.affirmation svg { width: 16px; height: 16px; flex: 0 0 auto; margin-top: 3px; }
+.form-question { font-size: clamp(26px, 4vw, 34px); font-weight: 650; margin: 0 0 10px; }
+.form-hint { font-size: 16px; color: var(--muted); margin: 0 0 32px; }
+.option-list { display: grid; gap: 10px; }
+.option-btn { background: var(--surface); border: 1px solid var(--line); border-radius: var(--radius); padding: 16px 18px; font: inherit; font-size: 16px; font-weight: 500; letter-spacing: -.01em; text-align: left; display: flex; align-items: center; gap: 14px; transition: border-color .15s; color: inherit; cursor: pointer; }
+.option-btn:hover { border-color: var(--ink); }
+.option-btn .opt-icon { flex: 0 0 auto; width: 36px; height: 36px; border-radius: 9px; background: var(--accent-soft); color: var(--accent-dark, var(--accent)); display: grid; place-items: center; }
+.option-btn .opt-icon svg { width: 19px; height: 19px; }
+.option-btn .opt-sub { display: block; font-size: 13px; font-weight: 400; color: var(--muted); }
+.form-nav { margin-top: 32px; display: flex; align-items: center; gap: 20px; }
+.back-btn { background: none; border: none; color: var(--muted); font: inherit; font-size: 14px; font-weight: 500; padding: 8px 0; transition: color .15s; cursor: pointer; }
+.back-btn:hover { color: var(--ink); }
+.contact-grid { display: grid; gap: 18px; }
+.form-overlay .field-row { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
+.contact-field label { display: block; font-size: 13px; font-weight: 600; margin-bottom: 7px; }
+.label-note { font-weight: 400; color: var(--muted); }
+.field-note { font-size: 12.5px; color: var(--muted); margin: 7px 0 0; }
+.ac-anchor { position: relative; }
+.ac-list { position: absolute; top: calc(100% + 4px); left: 0; right: 0; background: var(--surface); border: 1px solid var(--line); border-radius: 10px; box-shadow: 0 16px 40px rgba(16,20,19,.10); overflow: hidden; z-index: 20; }
+.ac-item { display: block; width: 100%; background: none; border: none; border-bottom: 1px solid var(--line); padding: 12px 15px; font: inherit; font-size: 14px; text-align: left; color: var(--ink); cursor: pointer; }
+.ac-item:last-child { border-bottom: none; }
+.ac-item:hover { background: var(--accent-soft); }
+.contact-field input, .contact-field select { width: 100%; font: inherit; font-size: 16px; padding: 13px 15px; border: 1px solid var(--line); border-radius: 10px; background: var(--surface); color: var(--ink); transition: border-color .15s; }
+.contact-field input:focus, .contact-field select:focus { outline: none; border-color: var(--accent); }
+.form-overlay .consent { display: flex; align-items: flex-start; gap: 11px; padding: 4px 0 0; background: none; border: none; border-radius: 0; margin: 0; }
+.form-overlay .consent input[type="checkbox"] { flex: 0 0 auto; width: 17px; height: 17px; margin-top: 2px; accent-color: var(--accent); cursor: pointer; }
+.form-overlay .consent label { font-size: 12.5px; font-weight: 400; line-height: 1.55; color: var(--muted); cursor: pointer; }
+.form-overlay .consent a { color: var(--muted); }
+.form-error { color: #b3402e; font-size: 14px; margin-top: 12px; display: none; min-height: 0; }
+.form-error.visible { display: block; }
+.submit-note { font-size: 13px; color: var(--muted); margin-top: 16px; }
+.result-kicker { text-transform: uppercase; letter-spacing: .12em; font-size: 12px; font-weight: 600; color: var(--accent-dark, var(--accent)); margin-bottom: 14px; }
+.celebrate { text-align: center; padding: 56px 0 24px; }
+.celebrate .result-kicker { animation: rise .5s ease-out .1s both; }
+.celebrate-badge { width: 78px; height: 78px; margin: 0 auto 30px; border-radius: 50%; background: var(--accent); color: #fff; display: grid; place-items: center; animation: pop .55s cubic-bezier(.34,1.56,.64,1) both; }
+.celebrate-badge svg { width: 36px; height: 36px; }
+.celebrate-check { stroke-dasharray: 24; stroke-dashoffset: 24; animation: draw .45s ease-out .35s forwards; }
+.celebrate-title { font-size: clamp(30px, 4.6vw, 44px); letter-spacing: -.03em; margin-bottom: 16px; animation: rise .5s ease-out .18s both; }
+.celebrate-sub { color: var(--muted); font-size: 17px; max-width: 480px; margin: 0 auto 24px; animation: rise .5s ease-out .28s both; }
+.hl { background: var(--accent-soft); color: var(--accent-dark, var(--accent)); font-weight: 600; padding: 1px 7px; border-radius: 6px; white-space: nowrap; }
+.celebrate-note { display: inline-flex; align-items: center; gap: 9px; background: var(--accent-soft); color: var(--accent-dark, var(--accent)); font-weight: 500; font-size: 14.5px; border-radius: 999px; padding: 11px 20px; animation: rise .5s ease-out .38s both; }
+.celebrate-note svg { width: 15px; height: 15px; flex: 0 0 auto; }
+.celebrate-nav { justify-content: center; animation: rise .5s ease-out .7s both; }
+.celebrate-reviews { margin-top: 44px; animation: rise .5s ease-out .55s both; }
+.celebrate-reviews-label { font-size: 12px; font-weight: 600; text-transform: uppercase; letter-spacing: .12em; color: var(--muted); margin-bottom: 14px; }
+.celebrate-review { background: var(--surface); border: 1px solid var(--line); border-radius: var(--radius); padding: 20px 24px; margin-bottom: 10px; text-align: left; }
+.stars { display: flex; gap: 3px; color: #d4af37; margin-bottom: 16px; }
+.stars svg { width: 15px; height: 15px; }
+.celebrate-review .stars { margin-bottom: 10px; }
+.celebrate-review .stars svg { width: 13px; height: 13px; }
+.celebrate-review blockquote { font-size: 14.5px; line-height: 1.6; margin: 0 0 10px; }
+.celebrate-review figcaption { font-size: 12.5px; color: var(--muted); }
+.celebrate-review figcaption strong { color: var(--ink); font-weight: 600; }
+@keyframes pop { from { transform: scale(.4); opacity: 0; } }
+@keyframes rise { from { transform: translateY(14px); opacity: 0; } }
+@keyframes draw { to { stroke-dashoffset: 0; } }
+.confetti { position: fixed; inset: 0; pointer-events: none; overflow: hidden; z-index: 120; }
+.confetti i { position: absolute; top: -3vh; display: block; animation: confetti-fall var(--dur) cubic-bezier(.3,.5,.5,1) var(--delay) forwards; opacity: 0; }
+@keyframes confetti-fall { 0% { transform: translate3d(0,0,0) rotate(0); opacity: 1; } 80% { opacity: 1; } 100% { transform: translate3d(var(--sway),108vh,0) rotate(var(--rot)); opacity: 0; } }
+@media (max-width: 560px) { .form-overlay .field-row { grid-template-columns: 1fr; } }
+
+/* ===== Lender-network trust bar ===== */
+.lenders { padding: 34px 0 30px; border-bottom: 1px solid var(--hair); background: var(--card); }
+.lenders-label { text-align: center; font-size: 12px; font-weight: 600; text-transform: uppercase; letter-spacing: .12em; color: var(--muted); margin: 0 0 16px; }
+.lender-row { display: flex; flex-wrap: wrap; justify-content: center; gap: 14px 38px; }
+.lender-row span { font-family: Inter, sans-serif; font-size: 17px; font-weight: 700; letter-spacing: -.01em; color: var(--ink); opacity: .55; white-space: nowrap; }
+.lenders-note { text-align: center; font-size: 11px; color: var(--muted); opacity: .75; margin: 16px 0 0; }
+
+/* ===== Niche HELOC block ===== */
+.niche-heloc { padding: 64px 0; background: var(--card); border-top: 1px solid var(--hair); border-bottom: 1px solid var(--hair); }
+.niche-heloc .eyebrow { margin-bottom: 10px; }
+.niche-points { list-style: none; padding: 0; margin: 22px 0 26px; display: grid; gap: 12px; }
+.niche-points li { display: flex; gap: 12px; align-items: flex-start; font-size: 17px; }
+.niche-points li svg { width: 20px; height: 20px; flex: 0 0 auto; margin-top: 3px; color: var(--accent); }
+.niche-points li strong { font-weight: 650; }
+
+/* ===== On-page testimonials ===== */
+.site-reviews { padding: 64px 0; }
+.site-reviews h2 { text-align: center; }
+.review-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(270px, 1fr)); gap: 16px; margin-top: 30px; }
+.review-card { background: var(--card); border: 1px solid var(--hair); border-radius: var(--radius); padding: 24px; margin: 0; }
+.review-card blockquote { font-size: 15.5px; line-height: 1.6; margin: 0 0 14px; }
+.review-card figcaption { font-size: 13px; color: var(--muted); }
+.review-card figcaption strong { color: var(--ink); font-weight: 600; }
+
+/* benefit chips */
+.benefit-chips { display: flex; flex-wrap: wrap; gap: 10px; margin-top: 22px; }
+.benefit-chips span { display: inline-flex; align-items: center; gap: 7px; background: var(--card); border: 1px solid var(--hair); border-radius: 999px; padding: 8px 16px; font-size: 14.5px; font-weight: 500; }
+.benefit-chips svg { width: 15px; height: 15px; color: var(--accent); }

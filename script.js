@@ -1,309 +1,722 @@
-/* TravelNurseMortgage match form — one big friendly question per screen.
-   Leads insert into the shared AdaptLend Supabase `leads` table (insert-only RLS). */
+/* TravelNurseMortgage match form — AdaptLend engine. One big friendly question per screen. */
 
 const SUPABASE_URL = "https://jaqtpjsnnsyxispgyzya.supabase.co";
 const SUPABASE_ANON_KEY = "sb_publishable_sXx0Rk_xOE6UmULnzQ94LA_ZdsWRnYW"; // publishable key — safe to expose; RLS is insert-only
+
+const SITE = {
+  "key": "travelnursemortgage",
+  "brand": "TravelNurseMortgage",
+  "questions": [
+    {
+      "id": "goal",
+      "question": "What brings you here today?",
+      "hint": "Cash-out and equity lines without tax returns \u2014 stipends and contracts welcome.",
+      "options": [
+        {
+          "value": "cashout",
+          "icon": "banknote",
+          "label": "Pull cash out of my home",
+          "affirm": "Great \u2014 cash-out is what our specialists do all day. Let's size it."
+        },
+        {
+          "value": "heloc",
+          "icon": "wallet",
+          "label": "Open a HELOC or HELOAN",
+          "sub": "Borrow against equity without touching your current rate",
+          "affirm": "Smart move \u2014 a line keeps your first mortgage untouched."
+        },
+        {
+          "value": "buy",
+          "icon": "key",
+          "label": "Buy a home"
+        },
+        {
+          "value": "refi",
+          "icon": "refresh",
+          "label": "Refinance my rate or term"
+        },
+        {
+          "value": "exploring",
+          "icon": "compass",
+          "label": "Just exploring my options",
+          "sub": "Smart. Look before you leap."
+        }
+      ]
+    },
+    {
+      "id": "income",
+      "question": "How do you make your money these days?",
+      "hint": "Pick whichever fits best \u2014 'it's complicated' is a perfectly good answer.",
+      "options": [
+        {
+          "value": "business",
+          "icon": "briefcase",
+          "label": "I own a business / self-employed",
+          "affirm": "Good news: your bank statements can speak for you \u2014 no perfect tax returns required."
+        },
+        {
+          "value": "retired",
+          "icon": "umbrella",
+          "label": "I'm retired, living off savings",
+          "affirm": "Good news: your savings can qualify you. No paycheck needed."
+        },
+        {
+          "value": "rentals",
+          "icon": "buildings",
+          "label": "Rental properties",
+          "affirm": "Nice. If the rent covers the mortgage, that can be enough on its own."
+        },
+        {
+          "value": "w2",
+          "icon": "wallet",
+          "label": "A regular paycheck"
+        },
+        {
+          "value": "complicated",
+          "icon": "asterisk",
+          "label": "It's complicated",
+          "affirm": "Our favorite answer. Banks hate complicated. We love it."
+        }
+      ]
+    },
+    {
+      "id": "docs",
+      "question": "What could you show us, if we asked nicely?",
+      "hint": "This just tells us which loan programs fit. Nothing is required today.",
+      "options": [
+        {
+          "value": "statements",
+          "icon": "bank",
+          "label": "Bank statements",
+          "sub": "12\u201324 months of deposits"
+        },
+        {
+          "value": "assets",
+          "icon": "coins",
+          "label": "Savings & investments",
+          "sub": "Retirement accounts count too"
+        },
+        {
+          "value": "rent",
+          "icon": "buildings",
+          "label": "The property's rent covers it"
+        },
+        {
+          "value": "taxes",
+          "icon": "document",
+          "label": "Full tax returns"
+        },
+        {
+          "value": "talk",
+          "icon": "phone",
+          "label": "Let's talk about it",
+          "sub": "Also a fine answer"
+        }
+      ]
+    },
+    {
+      "id": "credit",
+      "question": "How's your credit been treating you?",
+      "hint": "We don't check anything today \u2014 this is just between us.",
+      "options": [
+        {
+          "value": "great",
+          "icon": "star",
+          "label": "Great, honestly"
+        },
+        {
+          "value": "good",
+          "icon": "thumbsup",
+          "label": "Pretty good"
+        },
+        {
+          "value": "bumps",
+          "icon": "wave",
+          "label": "A few bumps along the road",
+          "affirm": "Bumps are fine. Roads have them."
+        },
+        {
+          "value": "event",
+          "icon": "sunrise",
+          "label": "A big event \u2014 bankruptcy, foreclosure, or similar",
+          "affirm": "That's exactly what fresh-start loans exist for. You're in the right place."
+        },
+        {
+          "value": "unsure",
+          "icon": "help",
+          "label": "Honestly not sure"
+        }
+      ]
+    },
+    {
+      "id": "property",
+      "question": "Tell us about the property.",
+      "hint": "The one you're buying, or the one you own.",
+      "options": [
+        {
+          "value": "house",
+          "icon": "home",
+          "label": "A regular house"
+        },
+        {
+          "value": "condo",
+          "icon": "building",
+          "label": "A condo"
+        },
+        {
+          "value": "investment",
+          "icon": "buildings",
+          "label": "An investment property",
+          "sub": "Rental, 2\u20134 units, short-term rental"
+        },
+        {
+          "value": "unusual",
+          "icon": "terrain",
+          "label": "Something unusual",
+          "sub": "Condotel, mixed-use, land, barndominium\u2026",
+          "affirm": "Unusual properties are a specialty of ours. The weirder the better."
+        },
+        {
+          "value": "none",
+          "icon": "search",
+          "label": "Haven't found it yet"
+        }
+      ]
+    },
+    {
+      "id": "amount",
+      "question": "Roughly how much would you want to borrow?",
+      "hint": "A ballpark is plenty.",
+      "options": [
+        {
+          "value": "small",
+          "icon": "bars1",
+          "label": "Under $300,000"
+        },
+        {
+          "value": "medium",
+          "icon": "bars2",
+          "label": "$300,000 \u2013 $700,000"
+        },
+        {
+          "value": "large",
+          "icon": "bars3",
+          "label": "$700,000 \u2013 $1.5 million"
+        },
+        {
+          "value": "jumbo",
+          "icon": "bars4",
+          "label": "Over $1.5 million"
+        }
+      ]
+    }
+  ],
+  "rules": [
+    {
+      "any": [
+        [
+          "goal",
+          "heloc"
+        ]
+      ],
+      "name": "HELOC / HELOAN"
+    },
+    {
+      "any": [
+        [
+          "income",
+          "retired"
+        ],
+        [
+          "docs",
+          "assets"
+        ]
+      ],
+      "name": "Asset-Based Loan"
+    },
+    {
+      "any": [
+        [
+          "income",
+          "rentals"
+        ],
+        [
+          "docs",
+          "rent"
+        ],
+        [
+          "property",
+          "investment"
+        ]
+      ],
+      "name": "DSCR Investor Loan"
+    },
+    {
+      "any": [
+        [
+          "income",
+          "business"
+        ],
+        [
+          "docs",
+          "statements"
+        ]
+      ],
+      "name": "Bank Statement Loan"
+    },
+    {
+      "any": [
+        [
+          "credit",
+          "event"
+        ],
+        [
+          "credit",
+          "bumps"
+        ]
+      ],
+      "name": "Fresh Start Loan"
+    },
+    {
+      "any": [
+        [
+          "property",
+          "unusual"
+        ]
+      ],
+      "name": "Specialty Property Loan"
+    },
+    {
+      "any": [
+        [
+          "amount",
+          "jumbo"
+        ],
+        [
+          "amount",
+          "large"
+        ]
+      ],
+      "name": "Jumbo Non-QM Loan"
+    }
+  ],
+  "defaultProduct": "Flexible-Doc Loan",
+  "seeds": {
+    "cashout": {
+      "goal": "cashout"
+    },
+    "heloc": {
+      "goal": "heloc"
+    },
+    "buy": {
+      "goal": "buy"
+    },
+    "refi": {
+      "goal": "refi"
+    }
+  },
+  "reviews": [
+    {
+      "quote": "Four agencies in two years and a stack of stipends \u2014 two banks gave up. My specialist counted all of it and I closed on my home base between contracts.",
+      "who": "Kayla M., RN",
+      "meta": "Travel nurse purchase \u00b7 Boise, ID"
+    },
+    {
+      "quote": "The HELOC floats me between contracts and covered my CRNA program deposit. Qualified on my deposits, not my W-2 box.",
+      "who": "Jess T., RN",
+      "meta": "Nurse HELOC \u00b7 Las Vegas, NV"
+    }
+  ],
+  "confetti": [
+    "#0e7e74",
+    "#7fd0c8",
+    "#e0f2f0",
+    "#d4af37",
+    "#1f3038"
+  ]
+};
+
+const ICONS = {
+  key: '<circle cx="7.5" cy="15.5" r="3.5"/><path d="m10.3 12.7 8.2-8.2"/><path d="m15.5 7.5 3 3L22 7l-3-3"/>',
+  refresh: '<path d="M3 12a9 9 0 0 1 15-6.7L21 8"/><path d="M21 3v5h-5"/><path d="M21 12a9 9 0 0 1-15 6.7L3 16"/><path d="M3 21v-5h5"/>',
+  banknote: '<rect x="2" y="6" width="20" height="12" rx="2"/><circle cx="12" cy="12" r="2.5"/><path d="M6 12h.01M18 12h.01"/>',
+  compass: '<circle cx="12" cy="12" r="9"/><path d="m15 9-2.2 5.2L9 15l2.2-5.2L15 9Z"/>',
+  briefcase: '<rect x="3" y="7" width="18" height="13" rx="2"/><path d="M8 7V5a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/><path d="M3 13h18"/>',
+  umbrella: '<path d="M12 3a9 9 0 0 1 9 9H3a9 9 0 0 1 9-9Z"/><path d="M12 3v9"/><path d="M12 12v6a2.5 2.5 0 0 1-5 0"/>',
+  buildings: '<path d="M3 21h18"/><path d="M5 21V9h6v12"/><path d="M11 21V4h8v17"/><path d="M14.5 8h2M14.5 12h2M14.5 16h2M7 13h2M7 17h2"/>',
+  wallet: '<rect x="3" y="6" width="18" height="14" rx="2"/><path d="M3 10h18"/><path d="M16 15h2"/>',
+  asterisk: '<path d="M12 4v16"/><path d="m5 8 14 8"/><path d="M19 8 5 16"/>',
+  bank: '<path d="m3 9 9-6 9 6"/><path d="M5 9v9M9.5 9v9M14.5 9v9M19 9v9"/><path d="M3 18h18"/><path d="M2 21h20"/>',
+  coins: '<ellipse cx="12" cy="6" rx="7" ry="3"/><path d="M5 6v6c0 1.7 3.1 3 7 3s7-1.3 7-3V6"/><path d="M5 12v6c0 1.7 3.1 3 7 3s7-1.3 7-3v-6"/>',
+  document: '<path d="M14 3H6a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V9l-6-6Z"/><path d="M14 3v6h6"/><path d="M9 14h6M9 17h6"/>',
+  phone: '<path d="M22 16.9v3a2 2 0 0 1-2.2 2 19.8 19.8 0 0 1-8.6-3.1 19.5 19.5 0 0 1-6-6A19.8 19.8 0 0 1 2.1 4.2 2 2 0 0 1 4.1 2h3a2 2 0 0 1 2 1.7c.1 1 .4 1.9.7 2.8a2 2 0 0 1-.4 2.1L8.1 9.9a16 16 0 0 0 6 6l1.3-1.3a2 2 0 0 1 2.1-.4c.9.3 1.9.6 2.8.7a2 2 0 0 1 1.7 2Z"/>',
+  star: '<path d="m12 3 2.8 5.7 6.2.9-4.5 4.4 1.1 6.2L12 17.3 6.4 20.2l1.1-6.2L3 9.6l6.2-.9L12 3Z"/>',
+  thumbsup: '<path d="M7 11v10"/><path d="M7 11h2.8a2 2 0 0 0 1.8-1.1L14 4a2.4 2.4 0 0 1 2.3 3l-.8 3h3.6a2 2 0 0 1 1.9 2.6l-1.9 6.9A2 2 0 0 1 17.2 21H5a2 2 0 0 1-2-2v-6a2 2 0 0 1 2-2h2Z"/>',
+  wave: '<path d="M2 15.5c2.5-6 5-6 7.5 0s5 6 7.5 0 3-4.5 5-3.5"/>',
+  sunrise: '<path d="M3 21h18"/><path d="M17 21a5 5 0 0 0-10 0"/><path d="M12 12V8"/><path d="M6.7 14.7 5.2 13.2"/><path d="M17.3 14.7l1.5-1.5"/>',
+  help: '<circle cx="12" cy="12" r="9"/><path d="M9.2 9a3 3 0 0 1 5.8 1c0 2-3 2.5-3 4"/><path d="M12 17.5h.01"/>',
+  home: '<path d="m3 10.5 9-7.5 9 7.5"/><path d="M5 9.5V21h14V9.5"/><path d="M10 21v-5h4v5"/>',
+  building: '<rect x="5" y="3" width="14" height="18" rx="1"/><path d="M9 7h2M13 7h2M9 11h2M13 11h2M9 15h2M13 15h2"/><path d="M11 21v-3h2v3"/><path d="M3 21h18"/>',
+  terrain: '<path d="m8 4 4 8 4.5-4.5L21 20H3L8 4Z"/>',
+  search: '<circle cx="11" cy="11" r="7"/><path d="m21 21-4.3-4.3"/>',
+  bars1: '<path d="M3 21h18"/><path d="M6 21v-4"/>',
+  bars2: '<path d="M3 21h18"/><path d="M6 21v-4"/><path d="M11 21v-8"/>',
+  bars3: '<path d="M3 21h18"/><path d="M6 21v-4"/><path d="M11 21v-8"/><path d="M16 21V9"/>',
+  bars4: '<path d="M3 21h18"/><path d="M6 21v-4"/><path d="M11 21v-8"/><path d="M16 21V9"/><path d="M21 21V5"/>',
+  check: '<path d="M20 6 9 17l-5-5"/>',
+};
+
+function icon(name, strokeWidth = 1.75) {
+  return `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="${strokeWidth}" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">${ICONS[name]}</svg>`;
+}
+function escapeHtml(s) {
+  return s.replace(/[&<>"']/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]));
+}
+const STAR = '<svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="m12 3 2.8 5.7 6.2.9-4.5 4.4 1.1 6.2L12 17.3 6.4 20.2l1.1-6.2L3 9.6l6.2-.9L12 3Z"/></svg>';
+const FIVE_STARS = `<div class="stars" aria-label="5 out of 5 stars">${STAR.repeat(5)}</div>`;
+
+const QUESTIONS = SITE.questions;
+const TOTAL_STEPS = QUESTIONS.length + 1;
+
+const US_STATES = ["AL","AK","AZ","AR","CA","CO","CT","DE","FL","GA","HI","ID","IL","IN","IA","KS","KY","LA","ME","MD","MA","MI","MN","MS","MO","MT","NE","NV","NH","NJ","NM","NY","NC","ND","OH","OK","OR","PA","RI","SC","SD","TN","TX","UT","VT","VA","WA","WV","WI","WY","DC"];
+const STATE_NAMES = { AL:"Alabama",AK:"Alaska",AZ:"Arizona",AR:"Arkansas",CA:"California",CO:"Colorado",CT:"Connecticut",DE:"Delaware",FL:"Florida",GA:"Georgia",HI:"Hawaii",ID:"Idaho",IL:"Illinois",IN:"Indiana",IA:"Iowa",KS:"Kansas",KY:"Kentucky",LA:"Louisiana",ME:"Maine",MD:"Maryland",MA:"Massachusetts",MI:"Michigan",MN:"Minnesota",MS:"Mississippi",MO:"Missouri",MT:"Montana",NE:"Nebraska",NV:"Nevada",NH:"New Hampshire",NJ:"New Jersey",NM:"New Mexico",NY:"New York",NC:"North Carolina",ND:"North Dakota",OH:"Ohio",OK:"Oklahoma",OR:"Oregon",PA:"Pennsylvania",RI:"Rhode Island",SC:"South Carolina",SD:"South Dakota",TN:"Tennessee",TX:"Texas",UT:"Utah",VT:"Vermont",VA:"Virginia",WA:"Washington",WV:"West Virginia",WI:"Wisconsin",WY:"Wyoming",DC:"Washington, DC" };
 
 const overlay = document.getElementById("formOverlay");
 const formBody = document.getElementById("formBody");
 const progressBar = document.getElementById("progressBar");
 
-const answers = {
-  goal: "", property: "primary", amount: "", income: "", docs: "", credit: "",
-};
-
-/* Loan-product matching: first rule that fits wins. Delivered to the broker,
-   never shown on-screen. "— RetiredRefi" suffix attributes the lead source. */
-const MATCH_RULES = [
-  { match: (a) => a.income === "1099", name: "1099 / Bank Statement Loan" },
-  { match: (a) => a.credit === "event", name: "Fresh Start Loan" },
-  { match: () => true, name: "Travel Nurse Income Mortgage" },
-];
-function matchedProduct() {
-  return MATCH_RULES.find((r) => r.match(answers)).name + " — TravelNurseMortgage";
-}
-
-/* ---------- Steps ---------- */
-
-const STEPS = [
-  {
-    key: "goal",
-    question: "What would you like to do?",
-    help: "There's no wrong answer — this just points us in the right direction.",
-    choices: [
-      { value: "first", label: "Buy my first home", sub: "Finally — a home base between contracts" },
-      { value: "buy", label: "Buy a home", sub: "Moving up, relocating, or investing" },
-      { value: "refi", label: "Refinance", sub: "Better rate or cash out" },
-      { value: "explore", label: "Just seeing what I qualify for", sub: "No pressure, real numbers" },
-    ],
-  },
-  {
-    key: "income",
-    question: "How are you paid right now?",
-    help: "Pick the closest fit — mixes are normal in travel nursing.",
-    choices: [
-      { value: "agency-w2", label: "Agency W-2 travel contracts", sub: "Base pay plus stipends" },
-      { value: "1099", label: "1099 contracts", sub: "Paid as an independent contractor" },
-      { value: "staff-w2", label: "Staff W-2", sub: "Hospital or clinic, maybe with OT and differentials" },
-      { value: "mixed", label: "A mix", sub: "Some W-2, some 1099, some per-diem" },
-    ],
-  },
-  {
-    key: "amount",
-    question: "Roughly what price range are you looking at?",
-    help: "Your best guess is plenty.",
-    choices: [
-      { value: "under300", label: "Under $300,000" },
-      { value: "300to600", label: "$300,000 – $600,000" },
-      { value: "600to1m", label: "$600,000 – $1 million" },
-      { value: "jumbo", label: "Over $1 million" },
-    ],
-  },
-  {
-    key: "docs",
-    question: "How long have you been working this way?",
-    help: "Lenders care about history more than anything else.",
-    choices: [
-      { value: "under-1yr", label: "Under a year" },
-      { value: "1-2yrs", label: "1–2 years" },
-      { value: "2plus-yrs", label: "More than 2 years" },
-    ],
-  },
-  {
-    key: "credit",
-    question: "How's your credit been lately?",
-    help: "This never touches your credit report — it's just your own sense of it.",
-    choices: [
-      { value: "great", label: "Very good or excellent" },
-      { value: "good", label: "Good" },
-      { value: "fair", label: "Fair — a few dings" },
-      { value: "event", label: "A rough patch", sub: "Bankruptcy, foreclosure, or big late payments" },
-    ],
-  },
-];
-
-const CONTACT_STEP = STEPS.length; // contact form is the final step
+let answers = {};
 let stepIndex = 0;
+let pendingAffirm = "";
+let seededIds = new Set();
 
-/* ---------- Rendering ---------- */
-
-function setProgress() {
-  const pct = Math.round((stepIndex / (STEPS.length + 1)) * 100);
-  progressBar.style.width = pct + "%";
-}
-
-function renderStep() {
-  setProgress();
-  if (stepIndex < STEPS.length) return renderChoice(STEPS[stepIndex]);
-  renderContact();
-}
-
-function renderChoice(step) {
-  const choices = step.choices
-    .map(
-      (c) => `<button class="choice-btn" data-value="${c.value}">${c.label}${
-        c.sub ? `<span class="choice-sub">${c.sub}</span>` : ""
-      }</button>`
-    )
-    .join("");
-  formBody.innerHTML = `
-    <div class="form-step">
-      <h2 id="formQuestion">${step.question}</h2>
-      ${step.help ? `<p class="step-help">${step.help}</p>` : ""}
-      <div class="choice-list">${choices}</div>
-      ${stepIndex > 0 ? '<div class="form-nav"><button class="btn-back" data-back>&larr; Back</button></div>' : ""}
-    </div>`;
-  formBody.querySelectorAll(".choice-btn").forEach((btn) =>
-    btn.addEventListener("click", () => {
-      answers[step.key] = btn.dataset.value;
-      stepIndex++;
-      renderStep();
-    })
-  );
-  const back = formBody.querySelector("[data-back]");
-  if (back) back.addEventListener("click", () => { stepIndex--; renderStep(); });
-}
-
-const US_STATES = "AL AK AZ AR CA CO CT DE FL GA HI ID IL IN IA KS KY LA ME MD MA MI MN MS MO MT NE NV NH NJ NM NY NC ND OH OK OR PA RI SC SD TN TX UT VT VA WA WV WI WY DC".split(" ");
-
-function renderContact() {
-  formBody.innerHTML = `
-    <div class="form-step">
-      <h2 id="formQuestion">Last step — where should your specialist reach you?</h2>
-      <p class="step-help">A licensed professional reviews your answers personally and reaches out within one business day.</p>
-      <div class="field-row">
-        <div class="field"><label for="f_first">Legal first name</label><input type="text" id="f_first" autocomplete="given-name"></div>
-        <div class="field"><label for="f_last">Legal last name</label><input type="text" id="f_last" autocomplete="family-name"></div>
-      </div>
-      <div class="field"><label for="f_email">Email</label><input type="email" id="f_email" autocomplete="email"></div>
-      <div class="field-row">
-        <div class="field"><label for="f_phone">Phone</label><input type="tel" id="f_phone" autocomplete="tel"></div>
-        <div class="field"><label for="f_dob">Date of birth <span style="font-weight:400">(needed for verification)</span></label><input type="date" id="f_dob" autocomplete="bday"></div>
-      </div>
-      <div class="field-row">
-        <div class="field" style="grid-column:1/-1"><label for="f_street">Street address</label><input type="text" id="f_street" autocomplete="street-address"></div>
-      </div>
-      <div class="field-row">
-        <div class="field"><label for="f_unit">Apt / Unit <span style="font-weight:400">(optional)</span></label><input type="text" id="f_unit"></div>
-        <div class="field"><label for="f_city">City</label><input type="text" id="f_city" autocomplete="address-level2"></div>
-      </div>
-      <div class="field-row">
-        <div class="field"><label for="f_state">State</label><select id="f_state"><option value="">Select…</option>${US_STATES.map((s) => `<option>${s}</option>`).join("")}</select></div>
-        <div class="field"><label for="f_zip">ZIP code</label><input type="text" id="f_zip" inputmode="numeric" autocomplete="postal-code"></div>
-      </div>
-      <label class="consent">
-        <input type="checkbox" id="f_consent">
-        <span>I agree to the <a href="https://adaptlend.com/terms.html" target="_blank" rel="noopener">Terms of Use</a> and
-        <a href="https://adaptlend.com/privacy.html" target="_blank" rel="noopener">Privacy Policy</a>, and I expressly consent to
-        AdaptLend and its participating professionals contacting me about my inquiry by phone, text message, and email —
-        including automated dialing systems, prerecorded messages, and texts — at the number and address I provided.
-        I understand consent is not a condition of receiving any loan or service, message and data rates may apply,
-        and I can opt out anytime (reply STOP to texts).</span>
-      </label>
-      <p class="form-error" id="formError"></p>
-      <div class="form-nav">
-        <button class="btn-back" data-back>&larr; Back</button>
-        <button class="btn btn-primary btn-lg" id="submitBtn">See my options</button>
-      </div>
-    </div>`;
-  formBody.querySelector("[data-back]").addEventListener("click", () => { stepIndex--; renderStep(); });
-  formBody.querySelector("#submitBtn").addEventListener("click", submitLead);
-}
-
-/* ---------- Validation & submit ---------- */
-
-function val(id) { return document.getElementById(id).value.trim(); }
-
-function validate() {
-  const need = { f_first: "first name", f_last: "last name", f_email: "email", f_phone: "phone", f_dob: "date of birth", f_street: "street address", f_city: "city", f_state: "state", f_zip: "ZIP code" };
-  for (const [id, label] of Object.entries(need)) {
-    if (!val(id)) return `Please add your ${label}.`;
+/* declarative product matching; senior-equity override runs at submit with DOB */
+function baseProduct(a) {
+  for (const rule of SITE.rules) {
+    if (rule.any.some(([f, v]) => a[f] === v)) return rule.name;
   }
-  if (!/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(val("f_email"))) return "That email doesn't look complete.";
-  if (val("f_phone").replace(/\D/g, "").length < 10) return "Please use a 10-digit phone number.";
-  if (!/^\d{5}(-\d{4})?$/.test(val("f_zip"))) return "ZIP code should be 5 digits.";
-  const dob = new Date(val("f_dob"));
-  const age = (Date.now() - dob.getTime()) / (365.25 * 24 * 3600 * 1000);
-  if (!(age >= 18 && age < 125)) return "Please double-check the date of birth.";
-  if (!document.getElementById("f_consent").checked) return "Please check the consent box so a specialist may contact you.";
-  return null;
+  return SITE.defaultProduct;
 }
-
-async function submitLead() {
-  const err = validate();
-  const errEl = document.getElementById("formError");
-  if (err) { errEl.textContent = err; return; }
-  errEl.textContent = "";
-  const btn = document.getElementById("submitBtn");
-  btn.disabled = true;
-  btn.textContent = "One moment…";
-
-  const lead = {
-    goal: answers.goal,
-    income: answers.income,
-    docs: answers.docs || null,
-    credit: answers.credit,
-    property: answers.property,
-    amount: answers.amount,
-    matched_product: matchedProduct(),
-    first_name: val("f_first"),
-    last_name: val("f_last"),
-    email: val("f_email"),
-    phone: val("f_phone"),
-    dob: val("f_dob"),
-    street: val("f_street"),
-    unit: val("f_unit") || null,
-    city: val("f_city"),
-    state: val("f_state"),
-    zip: val("f_zip"),
-    tcpa_consent: true,
-  };
-
-  let ok = false;
-  if (SUPABASE_URL && SUPABASE_ANON_KEY) {
-    try {
-      const res = await fetch(`${SUPABASE_URL}/rest/v1/leads`, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          apikey: SUPABASE_ANON_KEY,
-          Authorization: `Bearer ${SUPABASE_ANON_KEY}`,
-          Prefer: "return=minimal",
-        },
-        body: JSON.stringify(lead),
-      });
-      ok = res.ok;
-      if (!res.ok) console.error("Supabase insert failed:", res.status, await res.text());
-    } catch (e) {
-      console.error("Supabase insert error:", e);
+function matchedProduct(a, dobStr) {
+  let name = baseProduct(a);
+  if (dobStr) {
+    const age = (Date.now() - new Date(dobStr).getTime()) / (365.25 * 24 * 3600 * 1000);
+    if (age >= 62 && ["cashout", "heloc", "refi", "exploring"].includes(a.goal)) {
+      name = "Senior Equity Review (HELOC · Cash-Out · Reverse)";
     }
-  } else {
-    console.warn("Supabase not configured; lead logged to console only.", lead);
-    ok = true;
   }
-
-  if (!ok) {
-    errEl.textContent = "Something went wrong on our end — please try again in a moment.";
-    btn.disabled = false;
-    btn.textContent = "See my options";
-    return;
-  }
-  renderSuccess();
+  return name + " — " + SITE.brand;
 }
 
-function renderSuccess() {
-  progressBar.style.width = "100%";
+/* ---------- open / close ---------- */
+document.querySelectorAll("[data-open-form]").forEach((btn) => {
+  btn.addEventListener("click", () => {
+    answers = {}; stepIndex = 0; pendingAffirm = ""; seededIds = new Set();
+    const seed = btn.dataset.seed;
+    if (seed && SITE.seeds[seed]) {
+      const s = SITE.seeds[seed];
+      for (const [qid, val] of Object.entries(s)) {
+        answers[qid] = val; seededIds.add(qid);
+        const q = QUESTIONS.find((qq) => qq.id === qid);
+        const opt = q && q.options.find((o) => o.value === val);
+        if (opt && opt.affirm) pendingAffirm = opt.affirm;
+      }
+    }
+    overlay.hidden = false;
+    document.body.style.overflow = "hidden";
+    renderStep();
+  });
+});
+document.querySelector("[data-close-form]").addEventListener("click", closeForm);
+
+const matchParam = new URLSearchParams(location.search).get("match");
+if (matchParam !== null) {
+  const seededBtn = document.querySelector(`[data-open-form][data-seed="${matchParam}"]`);
+  (seededBtn || document.querySelector("[data-open-form]")).click();
+}
+function closeForm() { overlay.hidden = true; document.body.style.overflow = ""; }
+
+/* ---------- rendering ---------- */
+function setProgress() {
+  progressBar.style.width = Math.min(100, Math.round((stepIndex / TOTAL_STEPS) * 100)) + "%";
+}
+function renderStep() {
+  while (stepIndex < QUESTIONS.length && seededIds.has(QUESTIONS[stepIndex].id)) stepIndex++;
+  setProgress();
+  if (stepIndex < QUESTIONS.length) renderQuestion(QUESTIONS[stepIndex]);
+  else if (stepIndex === QUESTIONS.length) renderContact();
+  formBody.scrollIntoView({ block: "start" });
+}
+function renderQuestion(q) {
+  const affirmHtml = pendingAffirm ? `<div class="affirmation">${icon("check", 2)}<span>${pendingAffirm}</span></div>` : "";
+  pendingAffirm = "";
   formBody.innerHTML = `
-    <div class="form-success">
-      <div class="success-check">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg>
-      </div>
-      <h2>You're all set.</h2>
-      <p>A licensed specialist who works with retirees is reviewing your answers and will reach out within one business day.</p>
-      <p>We've also sent a note to your email — if you don't see it, check the spam folder just in case.</p>
-      <button class="btn btn-primary" data-close-form>Done</button>
+    <p class="form-step-label">Question ${stepIndex + 1} of ${TOTAL_STEPS} · about two minutes total</p>
+    ${affirmHtml}
+    <h2 class="form-question" id="formQuestion">${q.question}</h2>
+    <p class="form-hint">${q.hint}</p>
+    <div class="option-list">
+      ${q.options.map((o) => `
+        <button class="option-btn" data-value="${o.value}">
+          <span class="opt-icon">${icon(o.icon)}</span>
+          <span>${o.label}${o.sub ? `<span class="opt-sub">${o.sub}</span>` : ""}</span>
+        </button>`).join("")}
+    </div>
+    <div class="form-nav">
+      ${stepIndex > 0 ? '<button class="back-btn" data-back>← Go back a question</button>' : ""}
     </div>`;
-  formBody.querySelector("[data-close-form]").addEventListener("click", closeForm);
+  formBody.querySelectorAll(".option-btn").forEach((btn) => {
+    btn.addEventListener("click", () => {
+      const value = btn.dataset.value;
+      answers[q.id] = value;
+      const opt = q.options.find((o) => o.value === value);
+      if (opt && opt.affirm) pendingAffirm = opt.affirm;
+      stepIndex++; renderStep();
+    });
+  });
+  const back = formBody.querySelector("[data-back]");
+  if (back) back.addEventListener("click", goBack);
 }
-
-/* ---------- Open / close ---------- */
-
-function openForm(goal) {
-  if (goal) answers.goal = goal;
-  stepIndex = goal ? 1 : 0; // goal cards skip the first question
-  overlay.hidden = false;
-  document.body.style.overflow = "hidden";
+function goBack() {
+  stepIndex--;
+  if (stepIndex >= 0 && stepIndex < QUESTIONS.length) seededIds.delete(QUESTIONS[stepIndex].id);
+  pendingAffirm = "";
   renderStep();
 }
-function closeForm() {
-  overlay.hidden = true;
-  document.body.style.overflow = "";
+
+/* ---------- contact step (AdaptLend-identical) ---------- */
+function renderContact() {
+  const now = new Date();
+  const maxDob = `${now.getFullYear() - 18}-${String(now.getMonth() + 1).padStart(2, "0")}-${String(now.getDate()).padStart(2, "0")}`;
+  formBody.innerHTML = `
+    <p class="form-step-label">Last one · question ${TOTAL_STEPS} of ${TOTAL_STEPS}</p>
+    <h2 class="form-question" id="formQuestion">Where should your specialist reach you?</h2>
+    <p class="form-hint">Everything below is required — your specialist has to verify it's really you before they can talk numbers. Nothing here checks your credit.</p>
+    <div class="contact-grid">
+      <div class="field-row">
+        <div class="contact-field"><label for="cFirst">First (legal)</label><input id="cFirst" type="text" autocomplete="given-name"></div>
+        <div class="contact-field"><label for="cLast">Last (legal)</label><input id="cLast" type="text" autocomplete="family-name"></div>
+      </div>
+      <div class="field-row">
+        <div class="contact-field">
+          <label for="cEmail">Email</label>
+          <input id="cEmail" type="email" autocomplete="email" placeholder="you@example.com">
+          <p class="field-note">Your rate email is sent here.</p>
+        </div>
+        <div class="contact-field">
+          <label for="cPhone">Phone number</label>
+          <input id="cPhone" type="tel" autocomplete="tel" placeholder="(555) 555-5555">
+          <p class="field-note">Identity is verified before your quote is shared.</p>
+        </div>
+      </div>
+      <div class="contact-field">
+        <label for="cDob">Date of birth <span class="label-note">needed for verification</span></label>
+        <input id="cDob" type="date" max="${maxDob}">
+      </div>
+      <div class="contact-field">
+        <label for="cStreet">Street address</label>
+        <div class="ac-anchor">
+          <input id="cStreet" type="text" autocomplete="off" placeholder="Start typing your address…">
+          <div class="ac-list" id="acList" hidden></div>
+        </div>
+        <p class="field-note">Condo or apartment? Pick the building, then add your unit below.</p>
+      </div>
+      <div class="field-row">
+        <div class="contact-field"><label for="cUnit">Apt / unit / suite <span class="label-note">if any</span></label><input id="cUnit" type="text" autocomplete="address-line2"></div>
+        <div class="contact-field"><label for="cCity">City</label><input id="cCity" type="text" autocomplete="address-level2"></div>
+      </div>
+      <div class="field-row">
+        <div class="contact-field"><label for="cState">State</label>
+          <select id="cState"><option value="">Choose…</option>${US_STATES.map((s) => `<option value="${s}">${s}</option>`).join("")}</select>
+        </div>
+        <div class="contact-field"><label for="cZip">ZIP</label><input id="cZip" type="text" inputmode="numeric" autocomplete="postal-code" maxlength="10"></div>
+      </div>
+      <div class="consent">
+        <input type="checkbox" id="cConsent">
+        <label for="cConsent">I agree to the <a href="https://adaptlend.com/terms.html" target="_blank" rel="noopener">Terms of Use</a> and <a href="https://adaptlend.com/privacy.html" target="_blank" rel="noopener">Privacy Policy</a>, and I give my express written consent for ${SITE.brand}, AdaptLend, and their participating brokers and loan originators to contact me about my inquiry at the number and email above — including by automated calls, prerecorded or artificial voice, texts, and email, even if my number is on a do-not-call registry. Consent isn't a condition of getting a loan, message and data rates may apply, and I can opt out anytime (reply STOP to texts).</label>
+      </div>
+    </div>
+    <p class="form-error" id="contactError"></p>
+    <div class="form-nav">
+      <button class="btn btn-primary btn-lg" id="submitBtn">Get matched</button>
+      <button class="back-btn" data-back>← Go back</button>
+    </div>
+    <p class="submit-note">Submitting doesn't check your credit or commit you to anything.</p>`;
+  attachAddressAutocomplete();
+  const phoneInput = document.getElementById("cPhone");
+  phoneInput.addEventListener("input", () => {
+    const d = phoneInput.value.replace(/\D/g, "").slice(0, 10);
+    phoneInput.value =
+      d.length > 6 ? `(${d.slice(0, 3)}) ${d.slice(3, 6)}-${d.slice(6)}` :
+      d.length > 3 ? `(${d.slice(0, 3)}) ${d.slice(3)}` :
+      d.length > 0 ? `(${d}` : "";
+  });
+  formBody.querySelector("[data-back]").addEventListener("click", goBack);
+  formBody.querySelector("#submitBtn").addEventListener("click", async (e) => {
+    const btn = e.currentTarget;
+    if (btn.disabled) return;
+    const get = (id) => document.getElementById(id).value.trim();
+    const contact = {
+      first_name: get("cFirst"), last_name: get("cLast"), email: get("cEmail"),
+      phone: get("cPhone"), dob: get("cDob"), street: get("cStreet"), unit: get("cUnit"),
+      city: get("cCity"), state: get("cState"), zip: get("cZip"),
+    };
+    const problems = [];
+    if (!contact.first_name || !contact.last_name) problems.push("your legal first and last name");
+    if (!/^\S+@\S+\.\S+$/.test(contact.email)) problems.push("a valid email");
+    if (contact.phone.replace(/\D/g, "").length < 10) problems.push("a valid phone number");
+    if (!contact.dob) problems.push("your date of birth");
+    else if (contact.dob > maxDob) problems.push("a date of birth showing you're at least 18");
+    if (!contact.street || !contact.city || !contact.state || !/^\d{5}(-\d{4})?$/.test(contact.zip)) {
+      problems.push("your full address (street, city, state, and 5-digit ZIP)");
+    }
+    if (!document.getElementById("cConsent").checked) {
+      problems.push("the consent box checked, so your specialist is allowed to reach out");
+    }
+    const errorEl = document.getElementById("contactError");
+    if (problems.length) {
+      errorEl.textContent = "Almost there — we still need " + problems.join(", ") + ".";
+      errorEl.classList.add("visible");
+      return;
+    }
+    errorEl.classList.remove("visible");
+    btn.disabled = true;
+    btn.textContent = "Matching you…";
+    contact.tcpa_consent = true;
+    answers.contact = contact;
+    answers.matched_product = matchedProduct(answers, contact.dob);
+    await submitLead(answers);
+    stepIndex++;
+    renderCelebration();
+  });
 }
 
-document.querySelectorAll("[data-open-form]").forEach((el) =>
-  el.addEventListener("click", () => openForm(el.dataset.goal || ""))
-);
-overlay.querySelector("[data-close-form]").addEventListener("click", closeForm);
-document.addEventListener("keydown", (e) => {
-  if (e.key === "Escape" && !overlay.hidden) closeForm();
-});
-
-/* ---------- Asset-depletion mini calculator ---------- */
-
-const calcInput = document.getElementById("calcAssets");
-if (calcInput) {
-  calcInput.addEventListener("input", () => {
-    const digits = calcInput.value.replace(/[^\d]/g, "");
-    calcInput.value = digits ? Number(digits).toLocaleString("en-US") : "";
-    const assets = Number(digits || 0);
-    const result = document.getElementById("calcResult");
-    if (assets >= 50000) {
-      // Common simplified divisor: eligible assets spread over 240 months
-      const monthly = Math.round(assets / 240);
-      document.getElementById("calcIncome").textContent = "$" + monthly.toLocaleString("en-US");
-      result.hidden = false;
-    } else {
-      result.hidden = true;
-    }
+/* Address autocomplete via OpenStreetMap Nominatim; unit lives in Apt/Unit field. */
+function attachAddressAutocomplete() {
+  const input = document.getElementById("cStreet");
+  const list = document.getElementById("acList");
+  let timer;
+  const hide = () => { list.hidden = true; list.innerHTML = ""; };
+  input.addEventListener("input", () => {
+    clearTimeout(timer);
+    const q = input.value.trim();
+    if (q.length < 4) { hide(); return; }
+    timer = setTimeout(async () => {
+      try {
+        const res = await fetch(`https://nominatim.openstreetmap.org/search?format=jsonv2&addressdetails=1&countrycodes=us&limit=5&q=${encodeURIComponent(q)}`);
+        const results = (await res.json()).filter((r) => r.address);
+        if (!results.length) { hide(); return; }
+        list.innerHTML = results.map((r, i) => `<button type="button" class="ac-item" data-i="${i}">${escapeHtml(formatSuggestion(r))}</button>`).join("");
+        list.hidden = false;
+        list.querySelectorAll(".ac-item").forEach((item) => {
+          item.addEventListener("mousedown", (ev) => {
+            ev.preventDefault();
+            applySuggestion(results[Number(item.dataset.i)]);
+            hide();
+          });
+        });
+      } catch { hide(); }
+    }, 350);
   });
+  input.addEventListener("blur", () => setTimeout(hide, 150));
+  input.addEventListener("keydown", (ev) => { if (ev.key === "Escape") hide(); });
+}
+function formatSuggestion(r) {
+  const a = r.address;
+  const street = [a.house_number, a.road].filter(Boolean).join(" ");
+  const city = a.city || a.town || a.village || a.hamlet || "";
+  const state = (a["ISO3166-2-lvl4"] || "").split("-")[1] || "";
+  return [street || r.name, city, [state, a.postcode].filter(Boolean).join(" ")].filter(Boolean).join(", ");
+}
+function applySuggestion(r) {
+  const a = r.address;
+  const set = (id, v) => { if (v) document.getElementById(id).value = v; };
+  set("cStreet", [a.house_number, a.road].filter(Boolean).join(" ") || r.name);
+  set("cCity", a.city || a.town || a.village || a.hamlet);
+  set("cState", (a["ISO3166-2-lvl4"] || "").split("-")[1]);
+  set("cZip", a.postcode);
+  document.getElementById("cUnit").focus();
+}
+
+/* ---------- celebration ---------- */
+function renderCelebration() {
+  progressBar.style.width = "100%";
+  const first = escapeHtml(answers.contact.first_name);
+  const loanType = answers.matched_product.split(" — ")[0].replace(/ Loan$/, "");
+  const stateName = STATE_NAMES[answers.contact.state] || answers.contact.state;
+  formBody.innerHTML = `
+    <div class="celebrate">
+      <div class="celebrate-badge">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.25" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path class="celebrate-check" d="M20 6 9 17l-5-5"/></svg>
+      </div>
+      <p class="result-kicker">It's official</p>
+      <h2 class="celebrate-title">You've been matched, ${first}.</h2>
+      <p class="celebrate-sub">You're paired with a top producer specializing in closing <span class="hl">${loanType}</span> scenarios in <span class="hl">${stateName}</span>. They'll be contacting you shortly.</p>
+      <p class="celebrate-note">${icon("check", 2)}<span>Check your email for your match — and peek at spam, just in case.</span></p>
+      <div class="celebrate-reviews">
+        <p class="celebrate-reviews-label">You're in good company</p>
+        ${SITE.reviews.map((r) => `
+        <figure class="celebrate-review">
+          ${FIVE_STARS}
+          <blockquote>"${r.quote}"</blockquote>
+          <figcaption><strong>${r.who}</strong> · ${r.meta}</figcaption>
+        </figure>`).join("")}
+      </div>
+      <div class="form-nav celebrate-nav">
+        <button class="back-btn" data-close-result>← Back to the site</button>
+      </div>
+    </div>`;
+  launchConfetti();
+  formBody.querySelector("[data-close-result]").addEventListener("click", closeForm);
+}
+function launchConfetti() {
+  const colors = SITE.confetti;
+  const box = document.createElement("div");
+  box.className = "confetti";
+  for (let i = 0; i < 48; i++) {
+    const p = document.createElement("i");
+    const size = 5 + Math.random() * 5;
+    p.style.left = Math.random() * 100 + "%";
+    p.style.width = size + "px";
+    p.style.height = (Math.random() < 0.35 ? size : size * 1.9) + "px";
+    p.style.background = colors[i % colors.length];
+    p.style.borderRadius = Math.random() < 0.35 ? "50%" : "2px";
+    p.style.setProperty("--dur", (2.6 + Math.random() * 1.8).toFixed(2) + "s");
+    p.style.setProperty("--delay", (Math.random() * 0.5).toFixed(2) + "s");
+    p.style.setProperty("--sway", (Math.random() * 180 - 90).toFixed(0) + "px");
+    p.style.setProperty("--rot", (360 + Math.random() * 540).toFixed(0) + "deg");
+    box.appendChild(p);
+  }
+  document.body.appendChild(box);
+  setTimeout(() => box.remove(), 5500);
+}
+
+/* ---------- lead delivery (Supabase) + branded welcome email ---------- */
+async function submitLead(lead) {
+  const row = {
+    goal: lead.goal, income: lead.income, docs: lead.docs, credit: lead.credit,
+    property: lead.property, amount: lead.amount, matched_product: lead.matched_product,
+    ...lead.contact,
+  };
+  try {
+    const res = await fetch(`${SUPABASE_URL}/rest/v1/leads`, {
+      method: "POST",
+      headers: { apikey: SUPABASE_ANON_KEY, Authorization: `Bearer ${SUPABASE_ANON_KEY}`, "Content-Type": "application/json", Prefer: "return=minimal" },
+      body: JSON.stringify(row),
+    });
+    if (!res.ok) console.error("Supabase insert failed:", res.status, await res.text());
+  } catch (err) { console.error("Supabase insert error:", err); }
+  try {
+    await fetch(`${SUPABASE_URL}/functions/v1/send-welcome-sites`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json", apikey: SUPABASE_ANON_KEY },
+      body: JSON.stringify({
+        site: SITE.key,
+        first_name: lead.contact.first_name,
+        email: lead.contact.email,
+        loan_type: lead.matched_product.split(" — ")[0],
+        state_name: STATE_NAMES[lead.contact.state] || lead.contact.state,
+      }),
+    });
+  } catch (err) { console.error("Welcome email error:", err); }
 }
