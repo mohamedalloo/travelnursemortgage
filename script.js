@@ -3,6 +3,24 @@
 const SUPABASE_URL = "https://jaqtpjsnnsyxispgyzya.supabase.co";
 const SUPABASE_ANON_KEY = "sb_publishable_sXx0Rk_xOE6UmULnzQ94LA_ZdsWRnYW"; // publishable key — safe to expose; RLS is insert-only
 
+/* ---------- attribution (first-touch; survives same-site navigation) ---------- */
+const ATTR_KEYS = ["utm_source", "utm_medium", "utm_campaign", "utm_term", "utm_content", "gclid", "msclkid", "fbclid"];
+(function captureAttribution() {
+  try {
+    if (sessionStorage.getItem("al_attr")) return;
+    const params = new URLSearchParams(location.search);
+    const attr = {
+      referrer: document.referrer || "",
+      landing_page: location.pathname + location.search,
+    };
+    ATTR_KEYS.forEach((k) => { const v = params.get(k); if (v) attr[k] = v.slice(0, 200); });
+    sessionStorage.setItem("al_attr", JSON.stringify(attr));
+  } catch (e) { /* storage unavailable — lead still submits without attribution */ }
+})();
+function getAttribution() {
+  try { return JSON.parse(sessionStorage.getItem("al_attr")) || {}; } catch (e) { return {}; }
+}
+
 const SITE = {
   "key": "travelnursemortgage",
   "brand": "TravelNurseMortgage",
@@ -691,6 +709,7 @@ async function submitLead(lead) {
     goal: lead.goal, income: lead.income, docs: lead.docs, credit: lead.credit,
     property: lead.property, amount: lead.amount, matched_product: lead.matched_product,
     ...lead.contact,
+    ...getAttribution(),
   };
   try {
     const res = await fetch(`${SUPABASE_URL}/rest/v1/leads`, {
