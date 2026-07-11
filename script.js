@@ -327,13 +327,7 @@ const SITE = {
       "meta": "Nurse HELOC \u00b7 Las Vegas, NV"
     }
   ],
-  "confetti": [
-    "#0e7e74",
-    "#7fd0c8",
-    "#e0f2f0",
-    "#d4af37",
-    "#1f3038"
-  ]
+  "confetti": ["#10b981", "#34d399", "#f5b942", "#ffffff", "#1a2440"]
 };
 
 const ICONS = {
