@@ -19,46 +19,105 @@
   <meta name="twitter:card" content="summary">
 
   <script type="application/ld+json">
-  {
-    "@context": "https://schema.org",
-    "@graph": [
-      {
-        "@type": "FinancialService",
-        "@id": "https://travelnursemortgage.com/#org",
-        "name": "TravelNurseMortgage",
-        "url": "https://travelnursemortgage.com/",
-        "parentOrganization": { "@type": "Organization", "name": "AdaptLend", "url": "https://adaptlend.com/", "parentOrganization": { "@type": "Organization", "name": "Honest Casa LLC", "url": "https://honestcasa.com/", "identifier": { "@type": "PropertyValue", "name": "NMLS ID", "value": "1566096" } } },
-        "description": "TravelNurseMortgage matches travel nurses and agency medical staff with licensed mortgage specialists whose lenders correctly count travel-contract income: taxable base plus documented recurring stipends, contract history across agencies, overtime and differentials, and 1099 or bank-statement paths for contractor nurses.",
-        "areaServed": "US",
-        "knowsAbout": [
-          "Travel nurse mortgages",
-          "Counting tax-free stipends as qualifying income",
-          "13-week contract employment history",
-          "1099 nurse mortgages",
-          "Overtime and shift differential documentation"
-        ]
+{
+  "@context": "https://schema.org",
+  "@graph": [
+    {
+      "@type": "FinancialService",
+      "@id": "https://travelnursemortgage.com/#org",
+      "name": "TravelNurseMortgage",
+      "url": "https://travelnursemortgage.com/",
+      "parentOrganization": {
+        "@type": "Organization",
+        "@id": "https://adaptlend.com/#org",
+        "name": "AdaptLend",
+        "url": "https://adaptlend.com/"
       },
-      {
-        "@type": "WebSite",
-        "@id": "https://travelnursemortgage.com/#website",
-        "url": "https://travelnursemortgage.com/",
-        "name": "TravelNurseMortgage",
-        "publisher": { "@id": "https://travelnursemortgage.com/#org" }
-      },
-      {
-        "@type": "FAQPage",
-        "mainEntity": [
-          { "@type": "Question", "name": "Can travel nurses get a mortgage?", "acceptedAnswer": { "@type": "Answer", "text": "Yes. Lenders want 12–24 months of continuous travel history — agency changes are fine when the work is continuous, so keep every contract. The right lenders also count documented recurring stipends, which can nearly double qualifying income." } },
-          { "@type": "Question", "name": "Do tax-free travel nurse stipends count as mortgage income?", "acceptedAnswer": { "@type": "Answer", "text": "With some lenders, yes — when stipends are documented, recurring, and likely to continue. Many lenders won't count them at all, which is why lender matching matters more than rate shopping." } },
-          { "@type": "Question", "name": "Do agency changes hurt my mortgage application?", "acceptedAnswer": { "@type": "Answer", "text": "Not with lenders who understand travel nursing. Changing agencies every 13 weeks is the job, not job-hopping — what matters is continuous work history, so keep every contract and pay summary." } },
-          { "@type": "Question", "name": "I'm paid on 1099 contracts. Can I still qualify?", "acceptedAnswer": { "@type": "Answer", "text": "Yes — 1099 mortgage programs qualify you on your 1099 totals minus a roughly 10% expense factor, and bank statement programs use 12–24 months of actual deposits. Your write-offs stay untouched." } },
-          { "@type": "Question", "name": "How much work history do I need as a travel nurse?", "acceptedAnswer": { "@type": "Answer", "text": "Most programs want 12–24 months in travel nursing; prior staff-nursing W-2 history helps bridge shorter travel history since it's the same line of work." } },
-          { "@type": "Question", "name": "Will checking my options hurt my credit?", "acceptedAnswer": { "@type": "Answer", "text": "No. These questions never touch your credit report. A credit check only happens later, if and when you choose to move forward with a licensed specialist." } }
-        ]
+      "description": "TravelNurseMortgage matches travel nurses and agency medical staff with licensed mortgage specialists whose lenders correctly count travel-contract income: taxable base plus documented recurring stipends, contract history across agencies, overtime and differentials, and 1099 or bank-statement paths for contractor nurses.",
+      "areaServed": "US",
+      "knowsAbout": [
+        "Travel nurse mortgages",
+        "Counting tax-free stipends as qualifying income",
+        "13-week contract employment history",
+        "1099 nurse mortgages",
+        "Overtime and shift differential documentation"
+      ],
+      "identifier": [
+        {
+          "@type": "PropertyValue",
+          "name": "NMLS ID",
+          "value": "1566096"
+        }
+      ],
+      "sameAs": [
+        "https://www.nmlsconsumeraccess.org/EntityDetails.aspx/COMPANY/1566096"
+      ]
+    },
+    {
+      "@type": "WebSite",
+      "@id": "https://travelnursemortgage.com/#website",
+      "url": "https://travelnursemortgage.com/",
+      "name": "TravelNurseMortgage",
+      "publisher": {
+        "@id": "https://travelnursemortgage.com/#org"
       }
-    ]
-  }
-  </script>
+    },
+    {
+      "@type": "FAQPage",
+      "mainEntity": [
+        {
+          "@type": "Question",
+          "name": "Can travel nurses get a mortgage?",
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "Yes. Lenders want 12–24 months of continuous travel history — agency changes are fine when the work is continuous, so keep every contract. The right lenders also count documented recurring stipends, which can nearly double qualifying income."
+          }
+        },
+        {
+          "@type": "Question",
+          "name": "Do tax-free travel nurse stipends count as mortgage income?",
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "With some lenders, yes — when stipends are documented, recurring, and likely to continue. Many lenders won't count them at all, which is why lender matching matters more than rate shopping."
+          }
+        },
+        {
+          "@type": "Question",
+          "name": "Do agency changes hurt my mortgage application?",
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "Not with lenders who understand travel nursing. Changing agencies every 13 weeks is the job, not job-hopping — what matters is continuous work history, so keep every contract and pay summary."
+          }
+        },
+        {
+          "@type": "Question",
+          "name": "I'm paid on 1099 contracts. Can I still qualify?",
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "Yes — 1099 mortgage programs qualify you on your 1099 totals minus a roughly 10% expense factor, and bank statement programs use 12–24 months of actual deposits. Your write-offs stay untouched."
+          }
+        },
+        {
+          "@type": "Question",
+          "name": "How much work history do I need as a travel nurse?",
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "Most programs want 12–24 months in travel nursing; prior staff-nursing W-2 history helps bridge shorter travel history since it's the same line of work."
+          }
+        },
+        {
+          "@type": "Question",
+          "name": "Will checking my options hurt my credit?",
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "No. These questions never touch your credit report. A credit check only happens later, if and when you choose to move forward with a licensed specialist."
+          }
+        }
+      ]
+    }
+  ]
+}
+</script>
 
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
