@@ -17,6 +17,10 @@ const ATTR_KEYS = ["utm_source", "utm_medium", "utm_campaign", "utm_term", "utm_
     sessionStorage.setItem("al_attr", JSON.stringify(attr));
   } catch (e) { /* storage unavailable — lead still submits without attribution */ }
 })();
+/* Mixpanel helper — no-ops if analytics blocked (GPC/DNT) or not loaded. Never sends PII. */
+function mpTrack(event, props) {
+  try { if (window.mixpanel && typeof mixpanel.track === "function") mixpanel.track(event, props || {}); } catch (e) {}
+}
 function getAttribution() {
   try { return JSON.parse(sessionStorage.getItem("al_attr")) || {}; } catch (e) { return {}; }
 }
@@ -435,6 +439,7 @@ document.querySelectorAll("[data-open-form]").forEach((btn) => {
       }
     }
     overlay.hidden = false;
+    mpTrack("cta_clicked", { target: "form", seed: btn.dataset.seed || "" });
     document.body.style.overflow = "hidden";
     renderStep();
   });
@@ -481,6 +486,7 @@ function renderQuestion(q) {
     btn.addEventListener("click", () => {
       const value = btn.dataset.value;
       answers[q.id] = value;
+      mpTrack("funnel_step_completed", { step_number: stepIndex + 1, step_name: q.id });
       const opt = q.options.find((o) => o.value === value);
       if (opt && opt.affirm) pendingAffirm = opt.affirm;
       stepIndex++; renderStep();
@@ -598,6 +604,7 @@ function renderContact() {
     answers.contact = contact;
     answers.matched_product = matchedProduct(answers, contact.dob);
     await submitLead(answers);
+    mpTrack("lead_submitted", { matched_product: answers.matched_product, state: contact.state, goal: answers.goal, income: answers.income, docs: answers.docs, credit: answers.credit, property: answers.property, amount: answers.amount });
     stepIndex++;
     renderCelebration();
   });
